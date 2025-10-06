@@ -19,10 +19,8 @@ def train_step(
     """Performs a single training step."""
 
     def loss_fn(model: Classifier):
-        func = model(x, True)
-        ce_loss = jnp.mean(
-            optax.losses.softmax_cross_entropy_with_integer_labels(func, y)
-        )
+        func = model(x)
+        ce_loss = jnp.mean(optax.softmax_cross_entropy_with_integer_labels(func, y))
         l2_loss = model.l2_loss()
         return ce_loss + l2_loss
 
@@ -42,7 +40,7 @@ def compute_accuracy(
     else:
         x_np, y_np = data.get_test()
     x, y = (jnp.asarray(x_np[0:batch_size]), jnp.asarray(y_np[0:batch_size]))
-    f = model(x, False)
+    f = model(x)
     pred = jnp.argmax(f, axis=1)
     return round(jnp.mean(pred == y), 6)
 

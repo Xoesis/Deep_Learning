@@ -40,8 +40,7 @@ def main() -> None:
         layer_kernel_sizes=settings.model.kernel,
         stride=settings.model.stride,
         num_classes=settings.model.num_classes,
-        l2pen=settings.data.l2pen,
-        dropout_rate=settings.data.dropout_rate,
+        l2pen=settings.model.l2pen,
     )
 
     """Helps convergence by decreasing the learning rate over time"""
@@ -92,7 +91,6 @@ def final_test():
         stride=settings.model.stride,
         num_classes=settings.mode.num_classes,
         l2pen=settings.data.l2pen,
-        dropout_rate=settings.data.dropout_rate,
     )
 
     ckpt_dir = Path("/tmp/cifar/")

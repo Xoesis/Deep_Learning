@@ -81,10 +81,10 @@ class ResBlock(nnx.Module):
             self.id_layer_x = Conv2d(
                 id_key,
                 self.l2pen,
-                self.input_features,
-                self.layer_depths,
+                in_channels,
+                out_channels,
                 kernel_size=(1, 1),
-                stride=self.stride,
+                stride=stride,
             )
             self.con_x = True
         else:
@@ -94,24 +94,24 @@ class ResBlock(nnx.Module):
         self.layer1 = Conv2d(
             fl_key,
             self.l2pen,
-            self.input_features,
-            self.layer_depths,
-            self.kernel_sizes,
-            self.stride,
+            in_channels,
+            out_channels,
+            kernel_size=kernel_size,
+            stride=stride,
         )
         self.batch1 = BatchNorm(in_channels)
         self.activation = activation
         self.layer2 = Conv2d(
             fl_key,
             self.l2pen,
-            self.out_channels,
-            self.out_channels,
-            self.kernel_sizes,
+            out_channels,
+            out_channels,
+            kernel_size,
             stride=1,
         )
         self.batch2 = BatchNorm(out_channels)
 
-    def __call__(self, x: jax.Array, train: bool) -> jax.Array:
+    def __call__(self, x: jax.Array) -> jax.Array:
         fl = self.layer1(x)
         fl = self.batch1(fl)
         fl = self.activation(fl)
@@ -122,7 +122,7 @@ class ResBlock(nnx.Module):
             x = self.id_layer_x(x)
         return self.activation(x + fl)
 
-    def l2loss(self):
+    def l2_loss(self):
         l2loss = self.layer1.l2_loss()
         l2loss += self.layer2.l2_loss()
 
@@ -161,7 +161,7 @@ class Classifier(nnx.Module):
             stride=self.stride[0],
         )
         self.layers = []
-        for i in range(1, len(layer_depths)):
+        for i in range(1, len(self.layer_depths)):
             self.layers.append(
                 ResBlock(
                     self.keys[i],
@@ -177,7 +177,7 @@ class Classifier(nnx.Module):
             in_features=self.layer_depths[-1], out_features=self.num_classes, rngs=rngs
         )
 
-    def __call__(self, x: jax.Array, train: bool) -> jax.Array:
+    def __call__(self, x: jax.Array) -> jax.Array:
         x = self.first_layer(x)
         for layer in self.layers:
             x = layer(x)
