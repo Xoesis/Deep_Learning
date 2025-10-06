@@ -1,6 +1,7 @@
 from dataclasses import InitVar, dataclass, field
 
 import numpy as np
+import jax
 import jax.numpy as jnp
 import tensorflow as tf
 
@@ -61,12 +62,27 @@ class Data:
         """Select random subset of examples for training batch."""
         choices = rng.choice(self.index, size=batch_size)
 
-        return self.x_train[choices], jnp.squeeze(self.y_train[choices])
+        return self.x_train[choices], jax.numpy.ravel(self.y_train[choices])
 
     def get_val(self) -> tuple[np.ndarray, np.ndarray]:
         """Get the entire validation set."""
-        return self.x_val, jnp.squeeze(self.y_val)
+        return self.x_val, jax.numpy.ravel(self.y_val)
 
     def get_test(self) -> tuple[np.ndarray, np.ndarray]:
         """Get the entire test set."""
-        return self.x_test, jnp.squeeze(self.y_test)
+        return self.x_test, jax.numpy.ravel(self.y_test)
+
+    def get_shifted_batch(
+        self, rng: np.random.Generator, batch_size: int
+    ) -> tuple[np.ndarray, np.ndarray]:
+        @jax.jit
+        def shift_images(img, shifts):
+            def single_shift(img, shift_h, shift_w):
+                return jnp.roll(img, shift=(shift_h, shift_w), axis=(1, 2))
+
+            return jax.vmap(single_shift)(img, shifts[:, 0], shifts[:, 1])
+
+        choices = rng.choice(self.index, size=batch_size)
+        shift = rng.integers(low=-3, high=4, size=(2,))
+        self.shifted_x = shift_images(self.x_test, shift)
+        return self.shifted_x[choices], jax.numpy.ravel(self.y_test[choices])

@@ -76,7 +76,7 @@ class ResBlock(nnx.Module):
         self.rngs = nnx.Rngs(params=key)
         self.l2pen = l2pen
         self.padding = padding
-        if in_channels != out_channels or stride != 1:
+        if in_channels != out_channels:
             id_key, fl_key = jax.random.split(key, 2)
             self.id_layer_x = Conv2d(
                 id_key,
@@ -99,7 +99,7 @@ class ResBlock(nnx.Module):
             kernel_size=kernel_size,
             stride=stride,
         )
-        self.batch1 = BatchNorm(in_channels)
+        self.batch1 = BatchNorm(out_channels)
         self.activation = activation
         self.layer2 = Conv2d(
             fl_key,

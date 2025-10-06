@@ -51,7 +51,8 @@ def main() -> None:
 
     optimizer = nnx.Optimizer(model, optax.adam(schedule), wrt=nnx.Param)
 
-    train(model, optimizer, data, settings.training, np_rng)
+    train(model, optimizer, data, settings.training, np_rng, 0)
+    train(model, optimizer, data, settings.training, np_rng, 1)
 
     """Evaluate the accuracy of the training set"""
     val_accuracy = compute_accuracy(
@@ -89,8 +90,8 @@ def final_test():
         layer_depths=settings.model.layer_depth,
         layer_kernel_sizes=settings.model.kernel,
         stride=settings.model.stride,
-        num_classes=settings.mode.num_classes,
-        l2pen=settings.data.l2pen,
+        num_classes=settings.model.num_classes,
+        l2pen=settings.model.l2pen,
     )
 
     ckpt_dir = Path("/tmp/cifar/")

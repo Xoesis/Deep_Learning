@@ -51,12 +51,17 @@ def train(
     data: Data,
     settings: TrainingSettings,
     np_rng: np.random.Generator,
+    choose: int,
 ) -> None:
     """Train the model using SGD."""
     log.info("Starting training", **settings.model_dump())
     bar = trange(settings.num_iters)
     for i in bar:
-        x_np, y_np = data.get_batch(np_rng, settings.batch_size)
+        match choose:
+            case 0:
+                x_np, y_np = data.get_batch(np_rng, settings.batch_size)
+            case 1:
+                x_np, y_np = data.get_shifted_batch(np_rng, settings.batch_size)
         x, y = jnp.asarray(x_np), jnp.asarray(y_np)
 
         loss = train_step(model, optimizer, x, y)
