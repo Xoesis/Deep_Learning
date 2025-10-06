@@ -1,6 +1,7 @@
 from dataclasses import InitVar, dataclass, field
 
 import numpy as np
+import jax.numpy as jnp
 import tensorflow as tf
 
 
@@ -60,12 +61,12 @@ class Data:
         """Select random subset of examples for training batch."""
         choices = rng.choice(self.index, size=batch_size)
 
-        return self.x_train[choices], self.y_train[choices]
+        return self.x_train[choices], jnp.squeeze(self.y_train[choices])
 
     def get_val(self) -> tuple[np.ndarray, np.ndarray]:
         """Get the entire validation set."""
-        return self.x_val, self.y_val
+        return self.x_val, jnp.squeeze(self.y_val)
 
     def get_test(self) -> tuple[np.ndarray, np.ndarray]:
         """Get the entire test set."""
-        return self.x_test, self.y_test
+        return self.x_test, jnp.squeeze(self.y_test)
