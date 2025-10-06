@@ -45,7 +45,7 @@ class BatchNorm(nnx.Module):
 
     def __call__(self, x: jax.Array) -> jax.Array:
         # x shape (num_samples, height, width, channels)
-        n, h, w, c = x.shape
+        _, _, _, c = x.shape
 
         # Find mean and variance of each channel
         u = jnp.mean(x, axis=(1, 2), keepdims=True)
