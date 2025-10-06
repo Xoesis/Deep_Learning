@@ -51,8 +51,10 @@ def main() -> None:
 
     optimizer = nnx.Optimizer(model, optax.adam(schedule), wrt=nnx.Param)
 
-    train(model, optimizer, data, settings.training, np_rng, 0)
+    log.info("Training shifted cifar dataset")
     train(model, optimizer, data, settings.training, np_rng, 1)
+    log.info("Training raw cifar dataset")
+    train(model, optimizer, data, settings.training, np_rng, 0)
 
     """Evaluate the accuracy of the training set"""
     val_accuracy = compute_accuracy(

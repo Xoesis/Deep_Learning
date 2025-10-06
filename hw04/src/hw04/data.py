@@ -56,6 +56,15 @@ class Data:
         self.y_val = y_train_temp[val_idx]
         self.index = np.arange(len(self.y_train))
 
+        @jax.jit
+        def shift_images(img, shifts):
+            shift_h, shift_w = shifts
+            x = jnp.roll(img, shift=(shift_h, shift_w), axis=(1, 2))
+            return x
+
+        shift = rng.integers(low=-3, high=4, size=(2,))
+        self.shifted_x = shift_images(self.x_test, shift)
+
     def get_batch(
         self, rng: np.random.Generator, batch_size: int
     ) -> tuple[np.ndarray, np.ndarray]:
@@ -75,14 +84,5 @@ class Data:
     def get_shifted_batch(
         self, rng: np.random.Generator, batch_size: int
     ) -> tuple[np.ndarray, np.ndarray]:
-        @jax.jit
-        def shift_images(img, shifts):
-            def single_shift(img, shift_h, shift_w):
-                return jnp.roll(img, shift=(shift_h, shift_w), axis=(1, 2))
-
-            return jax.vmap(single_shift)(img, shifts[:, 0], shifts[:, 1])
-
         choices = rng.choice(self.index, size=batch_size)
-        shift = rng.integers(low=-3, high=4, size=(2,))
-        self.shifted_x = shift_images(self.x_test, shift)
-        return self.shifted_x[choices], jax.numpy.ravel(self.y_test[choices])
+        return self.shifted_x[choices], jax.numpy.ravel(self.y_train[choices])
