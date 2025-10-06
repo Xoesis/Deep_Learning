@@ -89,8 +89,8 @@ def final_test():
         layer_depths=settings.model.layer_depth,
         layer_kernel_sizes=settings.model.kernel,
         stride=settings.model.stride,
-        num_classes=settings.mode.num_classes,
-        l2pen=settings.data.l2pen,
+        num_classes=settings.model.num_classes,
+        l2pen=settings.model.l2pen,
     )
 
     ckpt_dir = Path("/tmp/cifar/")
