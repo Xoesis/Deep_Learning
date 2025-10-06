@@ -1,0 +1,33 @@
+# pyproject.toml.jinja
+
+[project]
+name = "hw04"
+version = "0.1.0"
+description = "My new homework assignment 4."
+readme = "README.md"
+authors = [
+    { name = "Berry Xu", email = "berry.xu@cooper.edu" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "structlog",
+    "rich",
+    "numpy",
+    "jax[cuda12]",
+    "flax",
+    "optax>=0.2.6",
+    "scikit-learn>=1.7.2",
+    "tqdm>=4.67.1",
+    "pydantic-settings>=2.11.0",
+    "tensorflow-datasets>=4.9.9",
+    "tensorflow>=2.20.0",
+    "matplotlib>=3.10.6",
+]
+
+[project.scripts]
+hw04 = "hw04:main"
+script = "hw04:final_test"
+
+[build-system]
+requires = ["uv_build>=0.8.3,<0.9.0"]
+build-backend = "uv_build"
