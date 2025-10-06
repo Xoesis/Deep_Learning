@@ -99,7 +99,7 @@ class ResBlock(nnx.Module):
             kernel_size=kernel_size,
             stride=stride,
         )
-        self.batch1 = BatchNorm(in_channels)
+        self.batch1 = BatchNorm(out_channels)
         self.activation = activation
         self.layer2 = Conv2d(
             fl_key,
